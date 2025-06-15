@@ -16,10 +16,16 @@ import {
   map,
   contains,
   shuffled,
-  open,
-  create,
-  append,
+  openFile,
+  createFile,
+  appendFile,
+  assert,
 } from "@utilities";
+
+// Solve Every Sudoku Puzzle
+
+// TypeScript port of Einar Egilsson's JavaScript port of Peter Norvig's Sudoku solver.
+// See http://norvig.com/sudoku.html for his article and explanations.
 
 // Throughout this program we have:
 //   r is a row,    e.g. 'A'
@@ -29,17 +35,6 @@ import {
 //   u is a unit,   e.g. ['A1','B1','C1','D1','E1','F1','G1','H1','I1']
 //   grid is a grid,e.g. 81 non-blank chars, e.g. starting with '.18...7...
 //   values is a dict of possible values, e.g. {'A1':'12349', 'A2':'8', ...}
-
-type Values = Record<string, string>;
-
-/**
- * Assert that a condition is true, throw an error if it's false.
- */
-const assert = (val: boolean, message?: string): void => {
-  if (!val) {
-    throw new Error(message || "Assert failed");
-  }
-};
 
 const digits = "123456789";
 const rows = "ABCDEFGHI";
@@ -277,7 +272,7 @@ const solveAll = (grids: string[], name: string = "", showif: number | null = 0.
         `(${t.toFixed(2)} seconds)\n`
       ].join("\n");
 
-      append("log.txt", output);
+      appendFile("log.txt", output);
       
       // Also show in console
       display(parseGridValues(grid));
@@ -301,7 +296,7 @@ const solveAll = (grids: string[], name: string = "", showif: number | null = 0.
       `max ${maxTime.toFixed(2)} secs).\n\n`;
     
     console.log(summary.trim());
-    append("log.txt", summary);
+    appendFile("log.txt", summary);
   }
 };
 
@@ -342,7 +337,7 @@ const test = (): void => {
  * Parse a puzzle file into a list of puzzles.
  */
 const parsePuzzleFile = (filename: string): string[] => {
-  return open(filename);
+  return openFile(filename);
 };
 
 // Main function to run all tests and solve puzzles
@@ -350,48 +345,48 @@ const main = async (): Promise<void> => {
   test();
   
   // Create log file at the start
-  create("log.txt", "Sudoku Solver Results\n===================\n");
+  createFile("log.txt", "Sudoku Solver Results\n===================\n");
   
   try {
     console.log("\n=== Solving Easy Puzzles ===");
-    append("log.txt", "\n=== Solving Easy Puzzles ===\n");
+    appendFile("log.txt", "\n=== Solving Easy Puzzles ===\n");
     const easyPuzzles = parsePuzzleFile("puzzles/easy50.txt");
     if (easyPuzzles.length === 0) {
       console.log("No valid puzzles found in easy50.txt");
-      append("log.txt", "No valid puzzles found in easy50.txt\n");
+      appendFile("log.txt", "No valid puzzles found in easy50.txt\n");
     } else {
       solveAll(easyPuzzles, "easy");
     }
 
     console.log("\n=== Solving Hard Puzzles ===");
-    append("log.txt", "\n=== Solving Hard Puzzles ===\n");
+    appendFile("log.txt", "\n=== Solving Hard Puzzles ===\n");
     const hardPuzzles = parsePuzzleFile("puzzles/top95.txt");
     if (hardPuzzles.length === 0) {
       console.log("No valid puzzles found in top95.txt");
-      append("log.txt", "No valid puzzles found in top95.txt\n");
+      appendFile("log.txt", "No valid puzzles found in top95.txt\n");
     } else {
       solveAll(hardPuzzles, "hard");
     }
 
     console.log("\n=== Solving Hardest Puzzles ===");
-    append("log.txt", "\n=== Solving Hardest Puzzles ===\n");
+    appendFile("log.txt", "\n=== Solving Hardest Puzzles ===\n");
     const hardestPuzzles = parsePuzzleFile("puzzles/hardest.txt");
     if (hardestPuzzles.length === 0) {
       console.log("No valid puzzles found in hardest.txt");
-      append("log.txt", "No valid puzzles found in hardest.txt\n");
+      appendFile("log.txt", "No valid puzzles found in hardest.txt\n");
     } else {
       solveAll(hardestPuzzles, "hardest");
     }
 
     console.log("\n=== Solving Random Puzzles ===");
-    append("log.txt", "\n=== Solving Random Puzzles ===\n");
+    appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
     solveAll(range(0, 99).map(() => randomPuzzle()), "random", 100.0);
   } catch (error: unknown) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       console.log("\n=== Note: Puzzle files not found, only running random puzzles ===");
-      append("log.txt", "\n=== Note: Puzzle files not found, only running random puzzles ===\n");
+      appendFile("log.txt", "\n=== Note: Puzzle files not found, only running random puzzles ===\n");
       console.log("\n=== Solving Random Puzzles ===");
-      append("log.txt", "\n=== Solving Random Puzzles ===\n");
+      appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
       solveAll(range(0, 99).map(() => randomPuzzle()), "random", 100.0);
     } else {
       throw error;

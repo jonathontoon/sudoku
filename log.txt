@@ -1252,7 +1252,7 @@ Sudoku Solver Results
 5 4 7 |3 1 8 |9 2 6 
 
 (0.00 seconds)
-Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
+Solved 50 of 50 easy puzzles (avg 0.00 secs (850 Hz), max 0.00 secs).
 
 
 === Solving Hard Puzzles ===
@@ -1355,7 +1355,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 3 7 9 |1 2 8 |4 5 6 
 6 4 2 |9 5 3 |7 1 8 
 
-(0.01 seconds)
+(0.02 seconds)
 . . . |. 1 4 |. . . 
 . 3 . |. . . |2 . . 
 . 7 . |. . . |. . . 
@@ -1730,7 +1730,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 6 4 1 |9 3 2 |8 5 7 
 7 8 9 |6 1 5 |2 3 4 
 
-(0.01 seconds)
+(0.00 seconds)
 . . 8 |4 . . |. 3 . 
 . . . |3 . . |. . . 
 9 . . |. . 1 |5 7 4 
@@ -1755,7 +1755,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 6 5 1 |7 8 2 |4 9 3 
 2 8 4 |1 9 3 |7 5 6 
 
-(0.02 seconds)
+(0.00 seconds)
 . 9 8 |. 1 . |. . . 
 2 . . |. . . |. 6 . 
 . . . |. . . |. . . 
@@ -1780,7 +1780,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 3 1 9 |5 7 8 |2 4 6 
 8 4 2 |9 6 3 |1 7 5 
 
-(0.07 seconds)
+(0.02 seconds)
 . . 2 |4 7 . |. 5 8 
 . . . |. . . |. . . 
 . . . |. . 1 |. 4 . 
@@ -1855,7 +1855,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 3 5 1 |2 4 6 |8 7 9 
 2 9 6 |8 3 7 |5 1 4 
 
-(0.01 seconds)
+(0.00 seconds)
 1 . . |. . . |7 . 9 
 . 4 . |. . 7 |2 . . 
 8 . . |. . . |. . . 
@@ -2780,7 +2780,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 4 9 8 |2 5 6 |1 7 3 
 7 5 6 |1 8 3 |9 2 4 
 
-(0.01 seconds)
+(0.00 seconds)
 1 . . |. . . |3 . 8 
 . 6 . |4 . . |. . . 
 . . . |. . . |. . . 
@@ -2980,7 +2980,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 8 5 7 |9 3 1 |4 6 2 
 4 1 6 |7 8 2 |9 5 3 
 
-(0.01 seconds)
+(0.00 seconds)
 8 . . |7 . . |. . 4 
 . 5 . |. . . |6 . . 
 . . . |. . . |. . . 
@@ -3631,7 +3631,7 @@ Solved 50 of 50 easy puzzles (avg 0.00 secs (843 Hz), max 0.00 secs).
 6 1 3 |4 7 9 |8 5 2 
 
 (0.01 seconds)
-Solved 95 of 95 hard puzzles (avg 0.01 secs (188 Hz), max 0.07 secs).
+Solved 95 of 95 hard puzzles (avg 0.00 secs (225 Hz), max 0.02 secs).
 
 
 === Solving Hardest Puzzles ===
@@ -3910,9 +3910,9 @@ Solved 95 of 95 hard puzzles (avg 0.01 secs (188 Hz), max 0.07 secs).
 2 7 8 |1 6 9 |4 3 5 
 
 (0.00 seconds)
-Solved 11 of 11 hardest puzzles (avg 0.00 secs (616 Hz), max 0.00 secs).
+Solved 11 of 11 hardest puzzles (avg 0.00 secs (650 Hz), max 0.00 secs).
 
 
 === Solving Random Puzzles ===
-Solved 98 of 99 random puzzles (avg 0.00 secs (616 Hz), max 0.00 secs).
+Solved 99 of 99 random puzzles (avg 0.00 secs (547 Hz), max 0.02 secs).
 
