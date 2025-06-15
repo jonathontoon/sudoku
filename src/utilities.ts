@@ -24,9 +24,11 @@ export const appendFile = (filename: string, content: string): void => {
 export const openFile = (filename: string, delimiter: string = "\n"): string[] => {
   try {
     const content = readFileSync(filename, "utf-8");
-    return content
-      .replace(/[^0-9\.]/g, "")  // Keep only digits and dots
-      .match(/.{81}/g) || [];    // Split into chunks of 81 characters
+    return (
+      content
+        .replace(/[^0-9\.]/g, "") // Keep only digits and dots
+        .match(/.{81}/g) || []
+    ); // Split into chunks of 81 characters
   } catch (error) {
     console.error(`Error reading file ${filename}: ${error}`);
     return [];
@@ -236,4 +238,4 @@ export const assert = (val: boolean, message?: string): void => {
   if (!val) {
     throw new Error(message || "Assert failed");
   }
-}; 
+};

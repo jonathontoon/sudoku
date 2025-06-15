@@ -7,39 +7,19 @@
  * 2. Processing puzzle files
  * 3. Solving puzzles and measuring performance
  * 4. Logging results to both console and file
- * 
+ *
  * The solver can handle puzzles of varying difficulty:
  * - Easy puzzles (from easy50.txt)
  * - Hard puzzles (from top95.txt)
  * - Hardest puzzles (from hardest.txt)
  * - Randomly generated puzzles
- * 
+ *
  * @see http://norvig.com/sudoku.html for the original algorithm explanation
  */
 
-import {
-  openFile,
-  createFile,
-  appendFile,
-  range,
-  assert,
-  len,
-  all,
-  contains,
-  map,
-} from "@utilities";
+import { openFile, createFile, appendFile, range, assert, len, all, contains, map } from "@utilities";
 
-import {
-  solve,
-  display,
-  parseGridValues,
-  solved,
-  randomPuzzle,
-  squares,
-  unitlist,
-  units,
-  peers,
-} from "@sudoku";
+import { solve, display, parseGridValues, solved, randomPuzzle, squares, unitlist, units, peers } from "@sudoku";
 
 /**
  * Run validation tests to ensure the solver's core data structures are correct.
@@ -52,45 +32,68 @@ import {
 const runTests = (): void => {
   assert(len(squares) === 81, "squares length");
   assert(len(unitlist) === 27, "unitlist length");
-  assert(all(squares, (s: string) => len(units[s]) === 3), "units length");
-  assert(all(squares, (s: string) => len(peers[s]) === 20), "peers length");
-  
+  assert(
+    all(squares, (s: string) => len(units[s]) === 3),
+    "units length",
+  );
+  assert(
+    all(squares, (s: string) => len(peers[s]) === 20),
+    "peers length",
+  );
+
   const sunits = map(units["C2"], (u: string[]) => u.join(","));
   assert(
     contains(sunits, "A2,B2,C2,D2,E2,F2,G2,H2,I2") &&
-    contains(sunits, "C1,C2,C3,C4,C5,C6,C7,C8,C9") &&
-    contains(sunits, "A1,A2,A3,B1,B2,B3,C1,C2,C3"),
-    "C2 units test"
+      contains(sunits, "C1,C2,C3,C4,C5,C6,C7,C8,C9") &&
+      contains(sunits, "A1,A2,A3,B1,B2,B3,C1,C2,C3"),
+    "C2 units test",
   );
-  
+
   assert(
     all(
       [
-        "A2", "B2", "D2", "E2", "F2", "G2", "H2", "I2",
-        "C1", "C3", "C4", "C5", "C6", "C7", "C8", "C9",
-        "A1", "A3", "B1", "B3"
+        "A2",
+        "B2",
+        "D2",
+        "E2",
+        "F2",
+        "G2",
+        "H2",
+        "I2",
+        "C1",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "A1",
+        "A3",
+        "B1",
+        "B3",
       ],
-      (s: string) => contains(peers["C2"], s)
+      (s: string) => contains(peers["C2"], s),
     ),
-    "C2 peers test"
+    "C2 peers test",
   );
-  
+
   console.log("All tests pass!");
-}; 
+};
 
 /**
  * Solve a sequence of Sudoku grids and report performance metrics.
- * 
+ *
  * @param grids - Array of Sudoku puzzle strings to solve
  * @param name - Identifier for this batch of puzzles (e.g., "easy", "hard")
  * @param showif - Time threshold in seconds. Puzzles taking longer than this will be displayed.
  *                Set to null to never display puzzles.
- * 
+ *
  * For each puzzle that takes longer than showif seconds, outputs:
  * 1. The original puzzle
  * 2. The solution (or "No solution found")
  * 3. The time taken
- * 
+ *
  * For the entire batch, reports:
  * - Number of puzzles solved
  * - Average solving time
@@ -107,11 +110,11 @@ const solveAll = (grids: string[], name: string = "", showif: number | null = 0.
       const output = [
         display(parseGridValues(grid), true),
         values ? display(values, true) : "No solution found",
-        `(${t.toFixed(2)} seconds)\n`
+        `(${t.toFixed(2)} seconds)\n`,
       ].join("\n");
 
       appendFile("log.txt", output);
-      
+
       // Also show in console
       display(parseGridValues(grid));
       if (values) display(values);
@@ -129,10 +132,11 @@ const solveAll = (grids: string[], name: string = "", showif: number | null = 0.
     const avgTime = times.reduce((a, b) => a + b, 0) / N;
     const maxTime = Math.max(...times);
     const Hz = N / times.reduce((a, b) => a + b, 0);
-    const summary = `Solved ${solvedCount} of ${N} ${name} puzzles ` +
+    const summary =
+      `Solved ${solvedCount} of ${N} ${name} puzzles ` +
       `(avg ${avgTime.toFixed(2)} secs (${Hz.toFixed(0)} Hz), ` +
       `max ${maxTime.toFixed(2)} secs).\n\n`;
-    
+
     console.log(summary.trim());
     appendFile("log.txt", summary);
   }
@@ -141,7 +145,7 @@ const solveAll = (grids: string[], name: string = "", showif: number | null = 0.
 /**
  * Read and parse a puzzle file into an array of puzzle strings.
  * Expected format: One puzzle per line, using '.' or '0' for empty cells.
- * 
+ *
  * @param filename - Path to the puzzle file
  * @returns Array of puzzle strings
  */
@@ -159,15 +163,15 @@ const parsePuzzleFile = (filename: string): string[] => {
  *    - Hardest puzzles (hardest.txt)
  *    - 100 randomly generated puzzles
  * 4. Handles missing puzzle files gracefully
- * 
+ *
  * Results are written to both console and log.txt
  */
 const main = async (): Promise<void> => {
   runTests();
-  
+
   // Create log file at the start
   createFile("log.txt", "Sudoku Solver Results\n===================\n");
-  
+
   try {
     console.log("\n=== Solving Easy Puzzles ===");
     appendFile("log.txt", "\n=== Solving Easy Puzzles ===\n");
@@ -201,14 +205,22 @@ const main = async (): Promise<void> => {
 
     console.log("\n=== Solving Random Puzzles ===");
     appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
-    solveAll(range(0, 99).map(() => randomPuzzle()), "random", 100.0);
+    solveAll(
+      range(0, 99).map(() => randomPuzzle()),
+      "random",
+      100.0,
+    );
   } catch (error: unknown) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       console.log("\n=== Note: Puzzle files not found, only running random puzzles ===");
       appendFile("log.txt", "\n=== Note: Puzzle files not found, only running random puzzles ===\n");
       console.log("\n=== Solving Random Puzzles ===");
       appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
-      solveAll(range(0, 99).map(() => randomPuzzle()), "random", 100.0);
+      solveAll(
+        range(0, 99).map(() => randomPuzzle()),
+        "random",
+        100.0,
+      );
     } else {
       throw error;
     }

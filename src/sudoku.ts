@@ -143,7 +143,7 @@ export const eliminate = (values: Values, s: string, d: string): Values | false 
  * Display these values as a 2-D grid.
  */
 export const display = (values: Values, toFile: boolean = false): string => {
-  if (!values || typeof values !== 'object') {
+  if (!values || typeof values !== "object") {
     const msg = "Invalid grid state";
     if (toFile) return msg + "\n";
     console.log(msg);
@@ -164,7 +164,7 @@ export const display = (values: Values, toFile: boolean = false): string => {
     .join("+");
 
   const output: string[] = [];
-  
+
   for (const r of rows) {
     const row = chars(cols)
       .map((c) => {
@@ -175,7 +175,7 @@ export const display = (values: Values, toFile: boolean = false): string => {
     output.push(row);
     if ("CF".includes(r)) output.push(line);
   }
-  output.push("");  // Add blank line at end
+  output.push(""); // Add blank line at end
 
   const result = output.join("\n");
   if (!toFile) {
@@ -252,10 +252,10 @@ export const countSolutions = (grid: string): number => {
  */
 const applyBasicConstraints = (values: Values): [Values | false, boolean] => {
   let progress = false;
-  
+
   for (const s of squares) {
     if (values[s].length === 1) continue;
-    
+
     // Try each possible value
     for (const d of chars(values[s])) {
       const newVals = assign(copy(values), s, d);
@@ -265,7 +265,7 @@ const applyBasicConstraints = (values: Values): [Values | false, boolean] => {
       }
     }
   }
-  
+
   return [values, progress];
 };
 
@@ -274,7 +274,7 @@ const applyBasicConstraints = (values: Values): [Values | false, boolean] => {
  */
 const findHiddenSingles = (values: Values): [Values | false, boolean] => {
   let progress = false;
-  
+
   for (const u of unitlist) {
     for (const d of digits) {
       const places = filter(u, (s) => values[s].includes(d));
@@ -284,7 +284,7 @@ const findHiddenSingles = (values: Values): [Values | false, boolean] => {
       }
     }
   }
-  
+
   return [values, progress];
 };
 
@@ -293,7 +293,7 @@ const findHiddenSingles = (values: Values): [Values | false, boolean] => {
  */
 const findNakedPairs = (values: Values): [Values | false, boolean] => {
   let progress = false;
-  
+
   for (const u of unitlist) {
     const pairs = filter(u, (s) => values[s].length === 2);
     for (let i = 0; i < pairs.length; i++) {
@@ -315,7 +315,7 @@ const findNakedPairs = (values: Values): [Values | false, boolean] => {
       }
     }
   }
-  
+
   return [values, progress];
 };
 
@@ -324,21 +324,17 @@ const findNakedPairs = (values: Values): [Values | false, boolean] => {
  */
 const findHiddenPairs = (values: Values): [Values | false, boolean] => {
   let progress = false;
-  
+
   for (const u of unitlist) {
     const unsolvedCells = filter(u, (s) => values[s].length > 1);
     for (let d1 = 0; d1 < 9; d1++) {
       for (let d2 = d1 + 1; d2 < 9; d2++) {
-        const places = filter(unsolvedCells, (s) => 
-          values[s].includes(digits[d1]) && values[s].includes(digits[d2])
-        );
+        const places = filter(unsolvedCells, (s) => values[s].includes(digits[d1]) && values[s].includes(digits[d2]));
         if (places.length === 2) {
           let canBePlacedElsewhere = true;
           for (const d of digits) {
             if (d !== digits[d1] && d !== digits[d2]) {
-              const otherPlaces = filter(u, (s) => 
-                s !== places[0] && s !== places[1] && values[s].includes(d)
-              );
+              const otherPlaces = filter(u, (s) => s !== places[0] && s !== places[1] && values[s].includes(d));
               if (otherPlaces.length === 0) {
                 canBePlacedElsewhere = false;
                 break;
@@ -359,7 +355,7 @@ const findHiddenPairs = (values: Values): [Values | false, boolean] => {
       }
     }
   }
-  
+
   return [values, progress];
 };
 
@@ -374,18 +370,13 @@ export const isLogicallySolvable = (grid: string): boolean => {
   let progress = true;
   while (progress) {
     progress = false;
-    
+
     // Count current assignments
     const before = filter(squares, (s) => values[s].length === 1).length;
-    
+
     // Try each technique in order of complexity
-    const techniques = [
-      applyBasicConstraints,
-      findHiddenSingles,
-      findNakedPairs,
-      findHiddenPairs
-    ];
-    
+    const techniques = [applyBasicConstraints, findHiddenSingles, findNakedPairs, findHiddenPairs];
+
     for (const technique of techniques) {
       const [newValues, madeProgress] = technique(values);
       if (!newValues) return false;
@@ -394,7 +385,7 @@ export const isLogicallySolvable = (grid: string): boolean => {
         break; // Start over with simpler techniques
       }
     }
-    
+
     // Check if we made any progress
     const after = filter(squares, (s) => values[s].length === 1).length;
     if (after > before) progress = true;
@@ -439,28 +430,28 @@ export const randomPuzzle = (N = 17): string => {
   }
 
   // Convert to string format, ensuring 81 characters
-  const solvedGrid = squares.map(s => values[s]).join("");
+  const solvedGrid = squares.map((s) => values[s]).join("");
   if (solvedGrid.length !== 81) {
     return randomPuzzle(N); // Start over if grid is invalid
   }
-  
+
   // Remove values while maintaining unique solution and logical solvability
   const puzzle = [...solvedGrid];
   const positions = shuffled(range(0, 80)); // Pre-shuffle positions
   let removedCount = 0;
-  
+
   for (const pos of positions) {
-    if (typeof pos !== 'number') continue;
+    if (typeof pos !== "number") continue;
     const temp = puzzle[pos];
     puzzle[pos] = ".";
     const grid = puzzle.join("");
-    
+
     // Verify grid is valid before checking constraints
     if (grid.length !== 81) {
       puzzle[pos] = temp; // Restore the value
       continue;
     }
-    
+
     // Check constraints more efficiently
     if (countSolutions(grid) === 1 && isLogicallySolvable(grid)) {
       removedCount++;
@@ -479,4 +470,4 @@ export const randomPuzzle = (N = 17): string => {
 };
 
 // Main solver function
-export const solve = (grid: string): Values | false => search(parseGrid(grid)); 
+export const solve = (grid: string): Values | false => search(parseGrid(grid));
