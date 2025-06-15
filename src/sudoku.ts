@@ -15,7 +15,6 @@ import {
   shuffled,
   repeat,
   center,
-  assert,
   range,
 } from "@utilities";
 
@@ -159,16 +158,13 @@ export const display = (values: Values, toFile: boolean = false): string => {
   }
 
   const width = 1 + Math.max(...lengths);
-  const line = repeat("-".repeat(width * 3), 3)
-    .split("")
-    .join("+");
-
+  const line = "-+-+-+-+-+-+-+-+-+-";
   const output: string[] = [];
-
+  
   for (const r of rows) {
     const row = chars(cols)
       .map((c) => {
-        const val = center(values[r + c] || "", width);
+        const val = center(values[r + c] || ".", width);
         return c === "3" || c === "6" ? val + "|" : val;
       })
       .join("");
@@ -372,7 +368,7 @@ export const isLogicallySolvable = (grid: string): boolean => {
     progress = false;
 
     // Count current assignments
-    const before = filter(squares, (s) => values[s].length === 1).length;
+    const before = filter(squares, (s: string) => values[s].length === 1).length;
 
     // Try each technique in order of complexity
     const techniques = [applyBasicConstraints, findHiddenSingles, findNakedPairs, findHiddenPairs];
