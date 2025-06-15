@@ -16,6 +16,7 @@ import {
   repeat,
   center,
   assert,
+  range,
 } from "@utilities";
 
 // Type definitions
@@ -247,6 +248,122 @@ export const countSolutions = (grid: string): number => {
 };
 
 /**
+ * Apply basic constraint propagation to eliminate values
+ */
+const applyBasicConstraints = (values: Values): [Values | false, boolean] => {
+  let progress = false;
+  
+  for (const s of squares) {
+    if (values[s].length === 1) continue;
+    
+    // Try each possible value
+    for (const d of chars(values[s])) {
+      const newVals = assign(copy(values), s, d);
+      if (!newVals) {
+        if (!eliminate(values, s, d)) return [false, false];
+        progress = true;
+      }
+    }
+  }
+  
+  return [values, progress];
+};
+
+/**
+ * Find hidden singles - digits that can only go in one place in a unit
+ */
+const findHiddenSingles = (values: Values): [Values | false, boolean] => {
+  let progress = false;
+  
+  for (const u of unitlist) {
+    for (const d of digits) {
+      const places = filter(u, (s) => values[s].includes(d));
+      if (places.length === 1 && values[places[0]].length > 1) {
+        if (!assign(values, places[0], d)) return [false, false];
+        progress = true;
+      }
+    }
+  }
+  
+  return [values, progress];
+};
+
+/**
+ * Find naked pairs - when two cells in a unit have the same two candidates
+ */
+const findNakedPairs = (values: Values): [Values | false, boolean] => {
+  let progress = false;
+  
+  for (const u of unitlist) {
+    const pairs = filter(u, (s) => values[s].length === 2);
+    for (let i = 0; i < pairs.length; i++) {
+      for (let j = i + 1; j < pairs.length; j++) {
+        if (values[pairs[i]] === values[pairs[j]]) {
+          // Remove these digits from other cells in the unit
+          const digits = values[pairs[i]];
+          for (const s of u) {
+            if (s !== pairs[i] && s !== pairs[j]) {
+              for (const d of chars(digits)) {
+                if (values[s].includes(d)) {
+                  if (!eliminate(values, s, d)) return [false, false];
+                  progress = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return [values, progress];
+};
+
+/**
+ * Find hidden pairs - when two digits appear only in the same two cells in a unit
+ */
+const findHiddenPairs = (values: Values): [Values | false, boolean] => {
+  let progress = false;
+  
+  for (const u of unitlist) {
+    const unsolvedCells = filter(u, (s) => values[s].length > 1);
+    for (let d1 = 0; d1 < 9; d1++) {
+      for (let d2 = d1 + 1; d2 < 9; d2++) {
+        const places = filter(unsolvedCells, (s) => 
+          values[s].includes(digits[d1]) && values[s].includes(digits[d2])
+        );
+        if (places.length === 2) {
+          let canBePlacedElsewhere = true;
+          for (const d of digits) {
+            if (d !== digits[d1] && d !== digits[d2]) {
+              const otherPlaces = filter(u, (s) => 
+                s !== places[0] && s !== places[1] && values[s].includes(d)
+              );
+              if (otherPlaces.length === 0) {
+                canBePlacedElsewhere = false;
+                break;
+              }
+            }
+          }
+          if (canBePlacedElsewhere) {
+            for (const s of places) {
+              for (const d of chars(values[s])) {
+                if (d !== digits[d1] && d !== digits[d2]) {
+                  if (!eliminate(values, s, d)) return [false, false];
+                  progress = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return [values, progress];
+};
+
+/**
  * Check if a puzzle can be solved through logical deduction alone,
  * without requiring trial and error.
  */
@@ -261,18 +378,20 @@ export const isLogicallySolvable = (grid: string): boolean => {
     // Count current assignments
     const before = filter(squares, (s) => values[s].length === 1).length;
     
-    // Apply logical deduction rules
-    for (const s of squares) {
-      if (values[s].length === 1) continue; // Already solved
-      
-      // Try each possible value
-      for (const d of chars(values[s])) {
-        const newVals = assign(copy(values), s, d);
-        if (!newVals) {
-          // If assigning d leads to contradiction, eliminate it
-          if (!eliminate(values, s, d)) return false;
-          progress = true;
-        }
+    // Try each technique in order of complexity
+    const techniques = [
+      applyBasicConstraints,
+      findHiddenSingles,
+      findNakedPairs,
+      findHiddenPairs
+    ];
+    
+    for (const technique of techniques) {
+      const [newValues, madeProgress] = technique(values);
+      if (!newValues) return false;
+      if (madeProgress) {
+        progress = true;
+        break; // Start over with simpler techniques
       }
     }
     
@@ -299,34 +418,64 @@ export const randomPuzzle = (N = 17): string => {
   // Fill in random values to create a solved grid
   for (const s of shuffled(squares)) {
     if (values[s].length > 1) {
-      const d = values[s][Math.floor(Math.random() * values[s].length)];
-      if (!assign(values, s, d)) {
-        return randomPuzzle(N); // Start over if we hit a contradiction
+      // Try values in random order
+      const possibleValues = shuffled(chars(values[s]));
+      let assigned = false;
+      for (const d of possibleValues) {
+        const newValues = assign(copy(values), s, d);
+        if (newValues) {
+          Object.assign(values, newValues);
+          assigned = true;
+          break;
+        }
       }
+      if (!assigned) return randomPuzzle(N); // Start over if stuck
     }
   }
 
-  // Convert to string format
-  const solvedGrid = map(squares, (s) => values[s]).join("");
+  // Verify we have a complete grid
+  if (!all(squares, (s) => values[s].length === 1)) {
+    return randomPuzzle(N); // Start over if grid is incomplete
+  }
+
+  // Convert to string format, ensuring 81 characters
+  const solvedGrid = squares.map(s => values[s]).join("");
+  if (solvedGrid.length !== 81) {
+    return randomPuzzle(N); // Start over if grid is invalid
+  }
   
   // Remove values while maintaining unique solution and logical solvability
   const puzzle = [...solvedGrid];
-  for (const s of shuffled(squares)) {
-    const temp = puzzle[squares.indexOf(s)];
-    puzzle[squares.indexOf(s)] = ".";
+  const positions = shuffled(range(0, 80)); // Pre-shuffle positions
+  let removedCount = 0;
+  
+  for (const pos of positions) {
+    if (typeof pos !== 'number') continue;
+    const temp = puzzle[pos];
+    puzzle[pos] = ".";
     const grid = puzzle.join("");
     
-    // Check if removing this value maintains our constraints
-    if (countSolutions(grid) !== 1 || !isLogicallySolvable(grid)) {
-      puzzle[squares.indexOf(s)] = temp; // Put it back
+    // Verify grid is valid before checking constraints
+    if (grid.length !== 81) {
+      puzzle[pos] = temp; // Restore the value
+      continue;
     }
     
-    // Stop if we've reached our target number of clues
-    const clues = puzzle.filter(c => c !== ".").length;
-    if (clues <= N) break;
+    // Check constraints more efficiently
+    if (countSolutions(grid) === 1 && isLogicallySolvable(grid)) {
+      removedCount++;
+      if (81 - removedCount <= N) break; // Stop if we've reached target clues
+    } else {
+      puzzle[pos] = temp; // Put it back
+    }
   }
 
-  return puzzle.join("");
+  const result = puzzle.join("");
+  // Final validation
+  if (result.length !== 81) {
+    return randomPuzzle(N); // Try again if result is invalid
+  }
+  return result;
 };
 
 // Main solver function
