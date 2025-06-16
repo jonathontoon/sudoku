@@ -208,7 +208,27 @@ const findHiddenPairs = (values: Values): ConstraintResult => {
 /**
  * Solve a Sudoku grid
  */
-export const solve = (grid: string): Values | false => search(parseGrid(grid));
+export const solve = (grid: string): Values | false => {
+  // First try to solve using only constraint propagation
+  let values = parseGrid(grid);
+  if (!values) return false;
+
+  // Apply advanced constraint techniques until no more progress
+  let progress = true;
+  while (progress) {
+    const [newValues, madeProgress] = applyBasicConstraints(values);
+    if (newValues === false) return false;
+    if (!madeProgress) break;
+    values = newValues;
+  }
+
+  // If not solved, fall back to search
+  if (!all(squares, (s: string) => values[s].length === 1)) {
+    return search(values);
+  }
+
+  return values;
+};
 
 /**
  * Generate a random puzzle with N givens.
