@@ -202,8 +202,7 @@ const main = async (): Promise<void> => {
       appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
       solveAll(
         range(0, 99).map(() => randomPuzzle()),
-        "random",
-        100.0,
+        "random"
       );
     } else {
       throw error;
