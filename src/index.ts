@@ -17,9 +17,13 @@
  * @see http://norvig.com/sudoku.html for the original algorithm explanation
  */
 
-import { openFile, createFile, appendFile, range, assert, len, all, contains, map } from "@utilities";
-
-import { solve, display, parseGridValues, solved, randomPuzzle, squares, unitlist, units, peers } from "@sudoku";
+import { openFile, createFile, appendFile } from './utils/file';
+import { range } from './utils/array';
+import { assert } from './utils/test';
+import { solve, randomPuzzle } from './core/solver';
+import { solved } from './core/validator';
+import { squares, unitlist, display } from './core/grid';
+import { units, peers } from './core/validator';
 
 /**
  * Run validation tests to ensure the solver's core data structures are correct.
@@ -30,51 +34,48 @@ import { solve, display, parseGridValues, solved, randomPuzzle, squares, unitlis
  * - Specific test case for square C2's relationships
  */
 const runTests = (): void => {
-  assert(len(squares) === 81, "squares length");
-  assert(len(unitlist) === 27, "unitlist length");
+  assert(squares.length === 81, "squares length");
+  assert(unitlist.length === 27, "unitlist length");
   assert(
-    all(squares, (s: string) => len(units[s]) === 3),
+    squares.every((s: string) => units[s].length === 3),
     "units length",
   );
   assert(
-    all(squares, (s: string) => len(peers[s]) === 20),
+    squares.every((s: string) => peers[s].length === 20),
     "peers length",
   );
 
-  const sunits = map(units["C2"], (u: string[]) => u.join(","));
+  const sunits = units["C2"].map((u: string[]) => u.join(","));
   assert(
-    contains(sunits, "A2,B2,C2,D2,E2,F2,G2,H2,I2") &&
-      contains(sunits, "C1,C2,C3,C4,C5,C6,C7,C8,C9") &&
-      contains(sunits, "A1,A2,A3,B1,B2,B3,C1,C2,C3"),
+    sunits.includes("A2,B2,C2,D2,E2,F2,G2,H2,I2") &&
+      sunits.includes("C1,C2,C3,C4,C5,C6,C7,C8,C9") &&
+      sunits.includes("A1,A2,A3,B1,B2,B3,C1,C2,C3"),
     "C2 units test",
   );
 
   assert(
-    all(
-      [
-        "A2",
-        "B2",
-        "D2",
-        "E2",
-        "F2",
-        "G2",
-        "H2",
-        "I2",
-        "C1",
-        "C3",
-        "C4",
-        "C5",
-        "C6",
-        "C7",
-        "C8",
-        "C9",
-        "A1",
-        "A3",
-        "B1",
-        "B3",
-      ],
-      (s: string) => contains(peers["C2"], s),
-    ),
+    [
+      "A2",
+      "B2",
+      "D2",
+      "E2",
+      "F2",
+      "G2",
+      "H2",
+      "I2",
+      "C1",
+      "C3",
+      "C4",
+      "C5",
+      "C6",
+      "C7",
+      "C8",
+      "C9",
+      "A1",
+      "A3",
+      "B1",
+      "B3",
+    ].every((s: string) => peers["C2"].includes(s)),
     "C2 peers test",
   );
 
@@ -101,10 +102,15 @@ const runTests = (): void => {
  * - Solving rate (puzzles per second)
  */
 const solveAll = (grids: string[], name: string = ""): void => {
+  // Warmup runs
+  for (let i = 0; i < 3; i++) {
+    solve(grids[0]);
+  }
+
   const timeSolve = (grid: string): [number, boolean] => {
     const start = performance.now();
     const values = solve(grid);
-    const t = (performance.now() - start) / 1000; // Convert to seconds
+    const t = performance.now() - start; // Keep in milliseconds
     return [t, solved(values)];
   };
 
@@ -114,28 +120,17 @@ const solveAll = (grids: string[], name: string = ""): void => {
   const N = grids.length;
 
   if (N > 1) {
-    const avgTime = times.reduce((a, b) => a + b, 0) / N;
-    const maxTime = Math.max(...times);
-    const Hz = N / times.reduce((a, b) => a + b, 0);
+    const avgTime = times.reduce((a, b) => a + b, 0) / N / 1000; // Convert to seconds for display
+    const maxTime = Math.max(...times) / 1000;
+    const Hz = (N * 1000) / times.reduce((a, b) => a + b, 0);
     const summary =
       `Solved ${solvedCount} of ${N} ${name} puzzles ` +
-      `(avg ${avgTime.toFixed(2)} secs (${Hz.toFixed(0)} Hz), ` +
-      `max ${maxTime.toFixed(2)} secs).\n\n`;
+      `(avg ${avgTime.toFixed(4)} secs (${Hz.toFixed(1)} Hz), ` +
+      `max ${maxTime.toFixed(4)} secs).\n\n`;
 
     console.log(summary.trim());
     appendFile("log.txt", summary);
   }
-};
-
-/**
- * Read and parse a puzzle file into an array of puzzle strings.
- * Expected format: One puzzle per line, using '.' or '0' for empty cells.
- *
- * @param filename - Path to the puzzle file
- * @returns Array of puzzle strings
- */
-const parsePuzzleFile = (filename: string): string[] => {
-  return openFile(filename);
 };
 
 /**
@@ -160,7 +155,7 @@ const main = async (): Promise<void> => {
   try {
     console.log("\n=== Solving Easy Puzzles ===");
     appendFile("log.txt", "\n=== Solving Easy Puzzles ===\n");
-    const easyPuzzles = parsePuzzleFile("puzzles/easy50.txt");
+    const easyPuzzles = openFile("puzzles/easy50.txt");
     if (easyPuzzles.length === 0) {
       console.log("No valid puzzles found in easy50.txt");
       appendFile("log.txt", "No valid puzzles found in easy50.txt\n");
@@ -170,7 +165,7 @@ const main = async (): Promise<void> => {
 
     console.log("\n=== Solving Hard Puzzles ===");
     appendFile("log.txt", "\n=== Solving Hard Puzzles ===\n");
-    const hardPuzzles = parsePuzzleFile("puzzles/top95.txt");
+    const hardPuzzles = openFile("puzzles/top95.txt");
     if (hardPuzzles.length === 0) {
       console.log("No valid puzzles found in top95.txt");
       appendFile("log.txt", "No valid puzzles found in top95.txt\n");
@@ -180,7 +175,7 @@ const main = async (): Promise<void> => {
 
     console.log("\n=== Solving Hardest Puzzles ===");
     appendFile("log.txt", "\n=== Solving Hardest Puzzles ===\n");
-    const hardestPuzzles = parsePuzzleFile("puzzles/hardest.txt");
+    const hardestPuzzles = openFile("puzzles/hardest.txt");
     if (hardestPuzzles.length === 0) {
       console.log("No valid puzzles found in hardest.txt");
       appendFile("log.txt", "No valid puzzles found in hardest.txt\n");

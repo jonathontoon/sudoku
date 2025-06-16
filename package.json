@@ -1,27 +1,24 @@
 {
-  "name": "regions",
+  "name": "sudoku-solver",
   "version": "1.0.0",
-  "type": "module",
-  "description": "",
+  "description": "A TypeScript implementation of Peter Norvig's Sudoku solver algorithm",
   "main": "dist/index.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "vite build",
+    "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "vite-node src/index.ts",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\""
+    "dev": "ts-node src/index.ts",
+    "test": "jest"
   },
-  "keywords": [],
+  "keywords": [
+    "sudoku",
+    "solver",
+    "typescript"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "@types/node": "^24.0.1",
-    "prettier": "^3.5.3",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vite-node": "^3.2.3"
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   }
 }
