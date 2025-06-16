@@ -1,7 +1,10 @@
 /**
  * Split string into characters.
  */
-export const chars = (str: string): string[] => str.split("");
+export const chars = (str: string): string[] => {
+  if (str === '') return ['']
+  return str.split("")
+}
 
 /**
  * Cross product of elements in A and elements in B.
