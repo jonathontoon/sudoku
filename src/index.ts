@@ -173,6 +173,16 @@ const main = async (): Promise<void> => {
       solveAll(hardPuzzles, "hard");
     }
 
+    console.log("\n=== Solving Harder Puzzles ===");
+    appendFile("log.txt", "\n=== Solving Harder Puzzles ===\n");
+    const harderPuzzles = openFile("puzzles/harder.txt");
+    if (harderPuzzles.length === 0) {
+      console.log("No valid puzzles found in harder.txt");
+      appendFile("log.txt", "No valid puzzles found in harder.txt\n");
+    } else {
+      solveAll(harderPuzzles, "harder");
+    }
+
     console.log("\n=== Solving Hardest Puzzles ===");
     appendFile("log.txt", "\n=== Solving Hardest Puzzles ===\n");
     const hardestPuzzles = openFile("puzzles/hardest.txt");
