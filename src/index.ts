@@ -100,26 +100,11 @@ const runTests = (): void => {
  * - Maximum solving time
  * - Solving rate (puzzles per second)
  */
-const solveAll = (grids: string[], name: string = "", showif: number | null = 0.0): void => {
+const solveAll = (grids: string[], name: string = ""): void => {
   const timeSolve = (grid: string): [number, boolean] => {
     const start = performance.now();
     const values = solve(grid);
     const t = (performance.now() - start) / 1000; // Convert to seconds
-
-    if (showif !== null && t > showif) {
-      const output = [
-        display(parseGridValues(grid), true),
-        values ? display(values, true) : "No solution found",
-        `(${t.toFixed(2)} seconds)\n`,
-      ].join("\n");
-
-      appendFile("log.txt", output);
-
-      // Also show in console
-      display(parseGridValues(grid));
-      if (values) display(values);
-      console.log(`(${t.toFixed(2)} seconds)\n`);
-    }
     return [t, solved(values)];
   };
 
@@ -207,8 +192,7 @@ const main = async (): Promise<void> => {
     appendFile("log.txt", "\n=== Solving Random Puzzles ===\n");
     solveAll(
       range(0, 99).map(() => randomPuzzle()),
-      "random",
-      100.0,
+      "random"
     );
   } catch (error: unknown) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
