@@ -8,22 +8,22 @@ describe('Units', () => {
   });
 
   it('should have 3 units per square', () => {
-    squares.forEach(square => {
+    squares.forEach((square) => {
       expect(units[square]).toHaveLength(3);
     });
   });
 
   it('should have correct units for middle square E5', () => {
     const e5Units = units['E5'];
-    
+
     // Column unit (first)
     expect(e5Units[0]).toContain('A5');
     expect(e5Units[0]).toContain('I5');
-    
+
     // Row unit (second)
     expect(e5Units[1]).toContain('E1');
     expect(e5Units[1]).toContain('E9');
-    
+
     // Box unit (third)
     expect(e5Units[2]).toContain('D4');
     expect(e5Units[2]).toContain('F6');
@@ -36,26 +36,26 @@ describe('Peers', () => {
   });
 
   it('should have 20 peers per square', () => {
-    squares.forEach(square => {
+    squares.forEach((square) => {
       expect(peers[square]).toHaveLength(20);
     });
   });
 
   it('should have correct peers for middle square E5', () => {
     const e5Peers = peers['E5'];
-    
+
     // Row peers
     expect(e5Peers).toContain('E1');
     expect(e5Peers).toContain('E9');
-    
+
     // Column peers
     expect(e5Peers).toContain('A5');
     expect(e5Peers).toContain('I5');
-    
+
     // Box peers
     expect(e5Peers).toContain('D4');
     expect(e5Peers).toContain('F6');
-    
+
     // Should not contain itself
     expect(e5Peers).not.toContain('E5');
   });
@@ -79,7 +79,7 @@ describe('Solved', () => {
 
   it('should return true for solved grid', () => {
     // A valid solved Sudoku grid
-    const grid = 
+    const grid =
       '123456789' +
       '456789123' +
       '789123456' +
@@ -99,4 +99,4 @@ describe('Solved', () => {
     const values = parseGridValues(grid);
     expect(solved(values)).toBe(false);
   });
-}); 
+});

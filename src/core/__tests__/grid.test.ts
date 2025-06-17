@@ -1,13 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  digits, 
-  rows, 
-  cols, 
-  squares, 
-  unitlist, 
-  parseGridValues, 
-  display 
-} from '../grid';
+import { digits, rows, cols, squares, unitlist, parseGridValues, display } from '../grid';
 
 describe('Grid Constants', () => {
   it('should have correct digits', () => {
@@ -41,20 +33,19 @@ describe('Unit List', () => {
   });
 
   it('should have 9 row units', () => {
-    const rowUnit = unitlist.find(unit => unit.every(square => square.startsWith('A')));
+    const rowUnit = unitlist.find((unit) => unit.every((square) => square.startsWith('A')));
     expect(rowUnit).toHaveLength(9);
   });
 
   it('should have 9 column units', () => {
-    const colUnit = unitlist.find(unit => unit.every(square => square.endsWith('1')));
+    const colUnit = unitlist.find((unit) => unit.every((square) => square.endsWith('1')));
     expect(colUnit).toHaveLength(9);
   });
 
   it('should have 9 box units', () => {
-    const boxUnit = unitlist.find(unit => 
-      unit.every(square => 
-        ['A', 'B', 'C'].includes(square[0]) && 
-        ['1', '2', '3'].includes(square[1])
+    const boxUnit = unitlist.find((unit) =>
+      unit.every(
+        (square) => ['A', 'B', 'C'].includes(square[0]) && ['1', '2', '3'].includes(square[1])
       )
     );
     expect(boxUnit).toHaveLength(9);
@@ -117,4 +108,4 @@ describe('display', () => {
     expect(output).toContain('-+-+-');
     expect(output.split('\n').length).toBeGreaterThan(9); // header + 9 rows + footer
   });
-}); 
+});

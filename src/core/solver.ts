@@ -11,7 +11,7 @@ import { chars } from '../utils/string';
 export const parseGrid = (grid: string): Values | false => {
   // To start, every square can be any digit
   const values: Values = {};
-  squares.forEach(s => {
+  squares.forEach((s) => {
     values[s] = digits;
   });
 
@@ -31,7 +31,7 @@ export const parseGrid = (grid: string): Values | false => {
  * Return values, except return false if a contradiction is detected.
  */
 export const assign = (values: Values, s: string, d: string): Values | false => {
-  const otherValues = values[s].replace(d, "");
+  const otherValues = values[s].replace(d, '');
   if (all(chars(otherValues), (d2: string) => eliminate(values, s, d2) !== false)) {
     return values;
   }
@@ -47,7 +47,7 @@ export const eliminate = (values: Values, s: string, d: string): Values | false 
     return values; // Already eliminated
   }
 
-  values[s] = values[s].replace(d, "");
+  values[s] = values[s].replace(d, '');
 
   // (1) If a square s is reduced to one value d2, then eliminate d2 from the peers
   if (values[s].length === 0) {
@@ -102,7 +102,7 @@ const applyBasicConstraints = (values: Values): ConstraintResult => {
 
   // Apply each constraint propagation technique
   const techniques = [findHiddenSingles, findNakedPairs, findHiddenPairs];
-  
+
   for (const technique of techniques) {
     const [newValues, madeProgress] = technique(result || {});
     if (newValues === false) return [false, progress];
@@ -124,7 +124,7 @@ const findHiddenSingles = (values: Values): ConstraintResult => {
 
   for (const unit of unitlist) {
     for (const d of digits) {
-      const places = unit.filter(s => values[s].includes(d));
+      const places = unit.filter((s) => values[s].includes(d));
       if (places.length === 1 && values[places[0]].length > 1) {
         result = assign(result || {}, places[0], d);
         if (result === false) return [false, progress];
@@ -144,12 +144,12 @@ const findNakedPairs = (values: Values): ConstraintResult => {
   let result = values;
 
   for (const unit of unitlist) {
-    const pairs = unit.filter(s => values[s].length === 2);
+    const pairs = unit.filter((s) => values[s].length === 2);
     for (let i = 0; i < pairs.length; i++) {
       for (let j = i + 1; j < pairs.length; j++) {
         if (values[pairs[i]] === values[pairs[j]]) {
           const digits = values[pairs[i]].split('');
-          const otherSquares = unit.filter(s => s !== pairs[i] && s !== pairs[j]);
+          const otherSquares = unit.filter((s) => s !== pairs[i] && s !== pairs[j]);
           for (const d of digits) {
             for (const s of otherSquares) {
               if (values[s].includes(d)) {
@@ -175,21 +175,25 @@ const findHiddenPairs = (values: Values): ConstraintResult => {
   let result = values;
 
   for (const unit of unitlist) {
-    const digitPlaces = digits.split('').map(d => ({
+    const digitPlaces = digits.split('').map((d) => ({
       digit: d,
-      places: unit.filter(s => values[s].includes(d))
+      places: unit.filter((s) => values[s].includes(d)),
     }));
 
     for (let i = 0; i < digitPlaces.length; i++) {
       for (let j = i + 1; j < digitPlaces.length; j++) {
         const places1 = digitPlaces[i].places;
         const places2 = digitPlaces[j].places;
-        
-        if (places1.length === 2 && places2.length === 2 &&
-            places1[0] === places2[0] && places1[1] === places2[1]) {
+
+        if (
+          places1.length === 2 &&
+          places2.length === 2 &&
+          places1[0] === places2[0] &&
+          places1[1] === places2[1]
+        ) {
           const d1 = digitPlaces[i].digit;
           const d2 = digitPlaces[j].digit;
-          
+
           for (const s of places1) {
             if (values[s].length > 2) {
               result = { ...result };
@@ -240,25 +244,25 @@ export const randomPuzzle = (N: number = 17): string => {
   if (!values) return Array(81).fill('.').join(''); // Should never happen
 
   // Convert the solved puzzle to a string
-  const solvedPuzzle = squares.map(s => values[s]).join('');
-  
+  const solvedPuzzle = squares.map((s) => values[s]).join('');
+
   // Remove values while maintaining uniqueness
   const positions = shuffled(squares);
   let puzzle = solvedPuzzle;
-  
+
   for (const p of positions) {
     const i = squares.indexOf(p);
     const digit = puzzle[i];
     const newPuzzle = puzzle.substring(0, i) + '.' + puzzle.substring(i + 1);
-    
+
     // If removing the digit creates multiple solutions or no solution, put it back
     const solutions = countSolutions(newPuzzle);
     if (solutions === 1) {
       puzzle = newPuzzle;
     }
-    
+
     // Stop if we've reached the target number of givens
-    if (puzzle.split('').filter(c => c !== '.').length <= N) {
+    if (puzzle.split('').filter((c) => c !== '.').length <= N) {
       break;
     }
   }
@@ -295,4 +299,4 @@ export const countSolutions = (grid: string): number => {
 
   recurse(values);
   return count;
-}; 
+};

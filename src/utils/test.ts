@@ -3,7 +3,7 @@
  */
 export const assert = (val: boolean, message?: string): void => {
   if (!val) {
-    throw new Error(message || "Assert failed");
+    throw new Error(message || 'Assert failed');
   }
 };
 
@@ -12,7 +12,7 @@ export const assert = (val: boolean, message?: string): void => {
  */
 export const runTestCases = (
   testCases: Array<{ name: string; test: () => boolean }>,
-  description: string = "Test Cases"
+  description: string = 'Test Cases'
 ): void => {
   console.log(`\n=== Running ${description} ===`);
   let passed = 0;
@@ -37,4 +37,4 @@ export const runTestCases = (
   if (failed > 0) {
     throw new Error(`${failed} test(s) failed`);
   }
-}; 
+};

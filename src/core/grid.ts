@@ -2,8 +2,8 @@ import { chars, cross, repeat } from '../utils/string';
 import { Values } from '../types/grid';
 
 // Grid Constants
-export const digits = "123456789";
-export const rows = "ABCDEFGHI";
+export const digits = '123456789';
+export const rows = 'ABCDEFGHI';
 export const cols = digits;
 
 // Calculate all squares and units
@@ -11,14 +11,16 @@ export const squares = cross(chars(rows), chars(cols));
 export const unitlist = [
   ...chars(cols).map((c) => cross(chars(rows), [c])),
   ...chars(rows).map((r) => cross([r], chars(cols))),
-  ...["ABC", "DEF", "GHI"].map((rs) => ["123", "456", "789"].map((cs) => cross(chars(rs), chars(cs)))).flat(),
+  ...['ABC', 'DEF', 'GHI']
+    .map((rs) => ['123', '456', '789'].map((cs) => cross(chars(rs), chars(cs))))
+    .flat(),
 ];
 
 /**
  * Convert grid into a dict of {square: char} with '0' or '.' for empties.
  */
 export const parseGridValues = (grid: string): Values => {
-  const cleanGrid = grid.replace(/[^0-9\.]/g, "").slice(0, 81);
+  const cleanGrid = grid.replace(/[^0-9\.]/g, '').slice(0, 81);
   if (cleanGrid.length !== 81) {
     // If the grid is too short, pad with dots
     const paddedGrid = cleanGrid.padEnd(81, '.');
@@ -31,38 +33,38 @@ export const parseGridValues = (grid: string): Values => {
  * Display these values as a 2-D grid.
  */
 export const display = (values: Values, toFile: boolean = false): string => {
-  if (!values || typeof values !== "object") {
-    const msg = "Invalid grid state";
-    if (toFile) return msg + "\n";
+  if (!values || typeof values !== 'object') {
+    const msg = 'Invalid grid state';
+    if (toFile) return msg + '\n';
     console.log(msg);
     return msg;
   }
 
   const lengths = Object.values(values).map((v: string) => v?.length || 0);
   if (lengths.length === 0) {
-    const msg = "Empty grid state";
-    if (toFile) return msg + "\n";
+    const msg = 'Empty grid state';
+    if (toFile) return msg + '\n';
     console.log(msg);
     return msg;
   }
 
   const width = 1 + Math.max(...lengths);
-  const line = "-+-+-+-+-+-+-+-+-+-";
+  const line = '-+-+-+-+-+-+-+-+-+-';
   const output: string[] = [];
-  
+
   for (const r of rows) {
     const row = chars(cols)
       .map((c) => {
-        const val = center(values[r + c] || ".", width);
-        return c === "3" || c === "6" ? val + "|" : val;
+        const val = center(values[r + c] || '.', width);
+        return c === '3' || c === '6' ? val + '|' : val;
       })
-      .join("");
+      .join('');
     output.push(row);
-    if ("CF".includes(r)) output.push(line);
+    if ('CF'.includes(r)) output.push(line);
   }
-  output.push(""); // Add blank line at end
+  output.push(''); // Add blank line at end
 
-  const result = output.join("\n");
+  const result = output.join('\n');
   if (!toFile) {
     console.log(result);
   }
@@ -77,5 +79,5 @@ const center = (text: string, width: number): string => {
   if (padding <= 0) return text;
   const leftPad = Math.floor(padding / 2);
   const rightPad = padding - leftPad;
-  return repeat(" ", leftPad) + text + repeat(" ", rightPad);
-}; 
+  return repeat(' ', leftPad) + text + repeat(' ', rightPad);
+};

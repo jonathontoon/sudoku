@@ -21,7 +21,7 @@ export const solved = (values: Values | false): boolean => {
   const unitSolved = (unit: string[]): boolean => {
     const udigits = unit.map((s: string) => values[s]);
     udigits.sort();
-    return udigits.join("") === "123456789";
+    return udigits.join('') === '123456789';
   };
   return unitlist.every(unitSolved);
-}; 
+};

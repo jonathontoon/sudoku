@@ -15,7 +15,8 @@ describe('parseGrid', () => {
 
   it('should parse valid grid', () => {
     // A valid grid with one number in each row
-    const grid = '1........2........3........4........5........6........7........8........9........';
+    const grid =
+      '1........2........3........4........5........6........7........8........9........';
     const values = parseGrid(grid);
     expect(values).toBeTruthy();
     if (values) {
@@ -38,7 +39,7 @@ describe('assign', () => {
     if (!values) {
       throw new Error('Grid parsing failed');
     }
-    
+
     const result = assign(values, 'A1', '1');
     expect(result).toBeTruthy();
     if (result) {
@@ -53,7 +54,7 @@ describe('assign', () => {
     if (!values) {
       throw new Error('Grid parsing failed');
     }
-    
+
     // Try to assign 1 to a peer of A1 which already contains 1
     const result = assign(values, 'A2', '1');
     expect(result).toBe(false);
@@ -66,7 +67,7 @@ describe('eliminate', () => {
     if (!values) {
       throw new Error('Grid parsing failed');
     }
-    
+
     const result = eliminate(values, 'A1', '1');
     expect(result).toBeTruthy();
     if (result) {
@@ -79,13 +80,13 @@ describe('eliminate', () => {
     if (!values) {
       throw new Error('Grid parsing failed');
     }
-    
+
     // First assign a single value
     const assigned = assign(values, 'A1', '1');
     if (!assigned) {
       throw new Error('Assignment failed');
     }
-    
+
     // Try to eliminate the only value
     const result = eliminate(assigned, 'A1', '1');
     expect(result).toBe(false);
@@ -94,7 +95,7 @@ describe('eliminate', () => {
 
 describe('solve', () => {
   it('should solve easy puzzle', () => {
-    const grid = 
+    const grid =
       '003020600' +
       '900305001' +
       '001806400' +
@@ -104,7 +105,7 @@ describe('solve', () => {
       '002609500' +
       '800203009' +
       '005010300';
-    
+
     const solution = solve(grid);
     expect(solution).toBeTruthy();
     expect(solved(solution)).toBe(true);
@@ -128,11 +129,11 @@ describe('randomPuzzle', () => {
   it('should generate solvable puzzle with correct number of givens', () => {
     const givens = 30;
     const puzzle = randomPuzzle(givens);
-    
+
     // Count non-empty cells
-    const filledCells = puzzle.split('').filter(c => c !== '.').length;
+    const filledCells = puzzle.split('').filter((c) => c !== '.').length;
     expect(filledCells).toBe(givens);
-    
+
     // Verify puzzle is solvable
     const solution = solve(puzzle);
     expect(solution).toBeTruthy();
@@ -141,15 +142,15 @@ describe('randomPuzzle', () => {
 
   it('should generate puzzle with reasonable number of givens', () => {
     const puzzle = randomPuzzle();
-    
+
     // Count non-empty cells (should be between 17 and 30)
-    const filledCells = puzzle.split('').filter(c => c !== '.').length;
+    const filledCells = puzzle.split('').filter((c) => c !== '.').length;
     expect(filledCells).toBeGreaterThanOrEqual(17);
     expect(filledCells).toBeLessThanOrEqual(30);
-    
+
     // Verify puzzle is solvable
     const solution = solve(puzzle);
     expect(solution).toBeTruthy();
     expect(solved(solution)).toBe(true);
   });
-}); 
+});

@@ -12,4 +12,4 @@ export type Units = Record<string, string[][]>;
 export type Peers = Record<string, string[]>;
 
 /** Represents the result of a constraint propagation operation */
-export type ConstraintResult = [Values | false, boolean]; 
+export type ConstraintResult = [Values | false, boolean];
