@@ -1,66 +1,139 @@
 /**
- * Check if all elements in a list satisfy a predicate.
+ * Array utility functions
  */
-export const all = <T>(list: T[], func: (value: T) => boolean): boolean => {
-  for (const x of list) {
-    if (!func(x)) return false;
-  }
-  return true;
-};
 
 /**
- * Create a shallow copy of an object.
+ * Iterate over a list and execute a function for each element
  */
-export const copy = <T>(obj: T): T => ({ ...obj });
+export function each<T>(list: T[], func: (index: number, item: T) => void): void {
+	for (let i = 0; i < list.length; i++) {
+		func(i, list[i]);
+	}
+}
 
 /**
- * Filter array elements based on a predicate function.
+ * Check if all elements in a list satisfy a condition
  */
-export const filter = <T>(list: T[], func: (value: T) => boolean): T[] => {
-  const result: T[] = [];
-  list.forEach((val: T) => {
-    if (func(val)) {
-      result.push(val);
-    }
-  });
-  return result;
-};
+export function all<T>(list: T[], func: (item: T) => boolean): boolean {
+	for (let i = 0; i < list.length; i++) {
+		if (!func(list[i])) {
+			return false;
+		}
+	}
+	return true;
+}
 
 /**
- * Create a unique array from an array.
+ * Check if any element in a list satisfies a condition
  */
-export const set = <T>(list: T[]): T[] => Array.from(new Set(list));
+export function any<T>(list: T[], func: (item: T) => boolean): boolean {
+	for (let i = 0; i < list.length; i++) {
+		const result = func(list[i]);
+		if (result) {
+			return result;
+		}
+	}
+	return false;
+}
 
 /**
- * Check if any element in a list satisfies a predicate.
+ * Filter a list based on a condition
  */
-export const some = <T, R>(list: T[], func: (value: T) => R | false): R | false => {
-  for (const x of list) {
-    const result = func(x);
-    if (result !== false) return result;
-  }
-  return false;
-};
+export function filter<T>(list: T[], func: ((index: number, item: T) => boolean) | ((item: T) => boolean)): T[] {
+	const result: T[] = [];
+	for (let i = 0; i < list.length; i++) {
+		if (func.length > 1) {
+			if ((func as (index: number, item: T) => boolean)(i, list[i])) {
+				result.push(list[i]);
+			}
+		} else if ((func as (item: T) => boolean)(list[i])) {
+			result.push(list[i]);
+		}
+	}
+	return result;
+}
 
 /**
- * Generate a range of numbers.
+ * Return the first element in a sequence that satisfies a condition
  */
-export const range = (start: number, end: number): number[] => {
-  const result: number[] = [];
-  for (let i = start; i < end; i++) {
-    result.push(i);
-  }
-  return result;
-};
+export function some<T>(seq: T[], func: (item: T) => any): any {
+	for (let i = 0; i < seq.length; i++) {
+		const result = func(seq[i]);
+		if (result) {
+			return result;
+		}
+	}
+	return false;
+}
 
 /**
- * Shuffle array elements randomly.
+ * Transform each element in a list using a function or property accessor
  */
-export const shuffled = <T>(list: T[]): T[] => {
-  const result = [...list];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-};
+export function map<T, R>(list: T[], expr: ((item: T) => R) | string): R[] {
+	const result: R[] = [];
+	each(list, (_, value) => {
+		if (typeof expr === 'function') {
+			result.push(expr(value));
+		} else if (typeof expr === 'string') {
+			result.push((value as any)[expr]);
+		}
+	});
+	return result;
+}
+
+/**
+ * Get a random element from a list
+ */
+export function randomElement<T>(list: T[]): T {
+	return list[Math.floor(Math.random() * list.length)];
+}
+
+/**
+ * Check if a list contains a specific value
+ */
+export function contains<T>(list: T[], val: T): boolean {
+	return any(list, (x) => x === val);
+}
+
+/**
+ * Shuffle an array randomly (Fisher-Yates shuffle)
+ */
+export function shuffle<T>(seq: T[]): T[] {
+	// Return a randomly shuffled copy of the input sequence
+	const result = map(seq, (x) => x);
+	// Fisher yates shuffle
+	let i = result.length;
+	while (--i) {
+		const j = Math.floor(Math.random() * (i + 1));
+		const ival = result[i];
+		const jval = result[j];
+		result[i] = jval;
+		result[j] = ival;
+	}
+	
+	return result;
+}
+
+/**
+ * Convert a string to an array of characters
+ */
+export function chars(s: string): string[] {
+	const result: string[] = [];
+	for (let i = 0; i < s.length; i++) {
+		result.push(s.charAt(i));
+	}
+	return result;
+}
+
+/**
+ * Create a cross product of two arrays
+ */
+export function cross<T, U>(a: T[], b: U[]): string[] {
+	const result: string[] = [];
+	for (let i = 0; i < a.length; i++) {
+		for (let j = 0; j < b.length; j++) {
+			result.push(String(a[i]) + String(b[j]));
+		}
+	}
+	return result;
+} 
