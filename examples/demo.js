@@ -29,6 +29,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.dirname(__dirname);
 
+// Pre-computed SQUARES array for efficient conversion (same as fast implementations)
+const COLS = ['A','B','C','D','E','F','G','H','I'];
+const ROWS = ['1','2','3','4','5','6','7','8','9'];
+const SQUARES = [];
+for (let c = 0; c < COLS.length; c++) {
+  for (let r = 0; r < ROWS.length; r++) {
+    SQUARES.push(COLS[c] + ROWS[r]);
+  }
+}
+
+// Difficulty targets (absolute clue counts)
+const DIFFICULTY_TARGETS = {
+  easy: 35,
+  medium: 28,
+  hard: 20
+};
+
+
+
 // Utility functions
 function fromFile(filename, separator = "\n") {
   const filepath = path.join(projectRoot, "puzzles", filename);
@@ -90,20 +109,21 @@ function solveAll(grids, name, showSlow = 0) {
   }
 }
 
+// Optimized conversion functions using pre-computed SQUARES array
+function objectToGridString(puzzleObject) {
+  // Use the same efficient approach as sudoku.lib.js serialize function
+  let result = '';
+  for (let i = 0; i < SQUARES.length; i++) {
+    result += puzzleObject[SQUARES[i]] || '.';
+  }
+  return result;
+}
+
 function generateRandomPuzzle() {
   // Generate a puzzle and return it as a string
   const puzzle = generate("easy");
-  const grid = Array(81).fill(".");
-
-  // Convert puzzle object to grid string
-  for (const [square, digit] of Object.entries(puzzle)) {
-    const row = square.charCodeAt(0) - "A".charCodeAt(0);
-    const col = parseInt(square[1]) - 1;
-    const index = row * 9 + col;
-    grid[index] = digit;
-  }
-
-  return grid.join("");
+  // Use optimized conversion - no expensive coordinate calculations
+  return objectToGridString(puzzle);
 }
 
 function displayGrid(gridString) {
@@ -142,16 +162,10 @@ function demonstrateFeatures() {
   const solveTime = Date.now() - start;
 
   if (solution) {
-    // Convert solution to string format
-    const solutionStr = Array(81).fill("");
-    for (const [square, digit] of Object.entries(solution)) {
-      const row = square.charCodeAt(0) - "A".charCodeAt(0);
-      const col = parseInt(square[1]) - 1;
-      const index = row * 9 + col;
-      solutionStr[index] = digit;
-    }
+    // Use optimized conversion - no expensive coordinate calculations
+    const solutionStr = objectToGridString(solution);
     console.log("\nSolution:");
-    displayGrid(solutionStr.join(""));
+    displayGrid(solutionStr);
     console.log(`Solved in ${solveTime}ms`);
   } else {
     console.log("Failed to solve puzzle");
@@ -160,16 +174,36 @@ function demonstrateFeatures() {
   // 2. Puzzle generation
   console.log("\n2. Puzzle Generation:");
   ["easy", "medium", "hard"].forEach((difficulty) => {
+    console.log(`\n--- ${difficulty.toUpperCase()} DIFFICULTY ---`);
+    
     const puzzle = generate(difficulty);
-    const count = Object.keys(puzzle).length;
-    console.log(`${difficulty.toUpperCase()} puzzle: ${count} clues`);
+    const actualCount = Object.keys(puzzle).length;
+    const targetCount = DIFFICULTY_TARGETS[difficulty];
+    
+    console.log(`Target: ${targetCount} clues`);
+    console.log(`Actual: ${actualCount} clues`);
 
-    // Show the first generated puzzle
-    if (difficulty === "easy") {
-      const gridStr = generateRandomPuzzle();
-      console.log("Sample easy puzzle:");
-      displayGrid(gridStr);
+    // Show sample puzzle for each difficulty
+    const gridStr = objectToGridString(puzzle);
+    console.log(`Puzzle:`);
+    displayGrid(gridStr);
+    
+    // Solve the puzzle and show solution
+    const start = Date.now();
+    const solution = solve(puzzle);
+    const solveTime = Date.now() - start;
+    
+    if (solution) {
+      const solutionStr = objectToGridString(solution);
+      console.log(`Solution (solved in ${solveTime}ms):`);
+      displayGrid(solutionStr);
+    } else {
+      console.log(`Failed to solve ${difficulty} puzzle`);
     }
+    
+    // Check uniqueness
+    const unique = isUnique(puzzle);
+    console.log(`Unique solution: ${unique}`);
   });
 
   // 3. Serialization
@@ -180,7 +214,27 @@ function demonstrateFeatures() {
   console.log(`Original clues: ${Object.keys(puzzle).length}`);
   console.log(`Serialized: ${serialized} (${serialized.length} chars)`);
   console.log(`Deserialized clues: ${Object.keys(deserialized).length}`);
-  console.log(`Round-trip successful: ${JSON.stringify(puzzle) === JSON.stringify(deserialized)}`);
+  
+  // Proper object comparison instead of fragile JSON.stringify comparison
+  function objectsEqual(obj1, obj2) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+    
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    
+    for (const key of keys1) {
+      if (obj1[key] !== obj2[key]) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+  
+  const roundTripSuccess = objectsEqual(puzzle, deserialized);
+  console.log(`Round-trip successful: ${roundTripSuccess}`);
 
   // 4. Uniqueness checking
   console.log("\n4. Uniqueness Checking:");
@@ -192,18 +246,66 @@ function demonstrateFeatures() {
   console.log("\n5. Hints and Conflicts:");
   const testPuzzle = generate("easy");
 
-  // Create a partial solution with some moves
-  const partialSolution = {};
-  const puzzleKeys = Object.keys(testPuzzle);
-  for (let i = 0; i < Math.min(5, puzzleKeys.length); i++) {
-    partialSolution[puzzleKeys[i]] = testPuzzle[puzzleKeys[i]];
+  // Start with a realistic partial solution (puzzle clues + some logical moves)
+  console.log("Testing hint system with progressive gameplay...");
+  
+  // Get the complete solution first
+  const completeSolution = solve(testPuzzle);
+  if (!completeSolution) {
+    console.log("Could not solve test puzzle for hint demonstration");
+    return;
+  }
+  
+  // Create a realistic partial solution: original clues + a few logical moves
+  const partialSolution = { ...testPuzzle }; // Start with all given clues
+  
+  // Add 3-5 logical next moves from the solution
+  const unfilledSquares = SQUARES.filter(s => !testPuzzle[s]);
+  const movesToAdd = Math.min(5, unfilledSquares.length);
+  
+  for (let i = 0; i < movesToAdd; i++) {
+    const square = unfilledSquares[i];
+    partialSolution[square] = completeSolution[square];
+  }
+  
+  console.log(`Puzzle clues: ${Object.keys(testPuzzle).length}`);
+  console.log(`Player progress: ${Object.keys(partialSolution).length} squares filled`);
+  console.log(`Remaining: ${81 - Object.keys(partialSolution).length} squares`);
+
+  // Test hint system
+  const hint = getHint(testPuzzle, partialSolution);
+  console.log(`Hint type: ${hint.type}`);
+  
+  if (hint.type === "squarehint") {
+    const correctValue = completeSolution[hint.square];
+    console.log(`Hint: Square ${hint.square} should be ${correctValue}`);
+  } else if (hint.type === "unithint") {
+    console.log(`Hint: In ${hint.unitType}, digit ${hint.digit} can only go in one place`);
+  } else if (hint.type === "error") {
+    console.log(`Error detected at square ${hint.square}`);
+  } else {
+    console.log(`Complex situation - no simple hints available`);
   }
 
-  const hint = getHint(testPuzzle, partialSolution);
-  const conflicts = getConflicts(partialSolution);
-
-  console.log(`Hint type: ${hint.type}`);
-  console.log(`Conflicts found: ${conflicts.length}`);
+  // Test conflicts with an intentional error
+  const conflictTestSolution = { ...partialSolution };
+  const firstEmptySquare = SQUARES.find(s => !conflictTestSolution[s]);
+  if (firstEmptySquare) {
+    // Add a wrong value to create a conflict
+    const correctValue = completeSolution[firstEmptySquare];
+    const wrongValue = correctValue === "1" ? "2" : "1";
+    conflictTestSolution[firstEmptySquare] = wrongValue;
+    
+    const conflicts = getConflicts(conflictTestSolution);
+    console.log(`Conflicts with wrong move: ${conflicts.length}`);
+    
+    if (conflicts.length > 0) {
+      console.log(`Conflict detected: ${wrongValue} at ${firstEmptySquare} conflicts with existing values`);
+    }
+  } else {
+    const conflicts = getConflicts(partialSolution);
+    console.log(`Conflicts found: ${conflicts.length}`);
+  }
 }
 
 function main() {
