@@ -26,7 +26,7 @@
     // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
 
     /* Modules */
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "baseUrl": "src",
     "paths": {
@@ -44,10 +44,10 @@
     // "noUncheckedSideEffectImports": true,             /* Check side effect imports. */
     // "resolveJsonModule": true,                        /* Enable importing .json files. */
     // "allowArbitraryExtensions": true,                 /* Enable importing files with any extension, provided a declaration file is present. */
-    "noEmit": false,                                   /* Disable emitting files from a compilation. */
-    "declaration": true,                               /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
-    "outDir": "./dist",                               /* Specify an output folder for all emitted files. */
+    "noEmit": true,                                    /* Disable emitting files from a compilation. */
+    // "declaration": true,                            /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    // "declarationMap": true,                         /* Create sourcemaps for d.ts files. */
+    // "outDir": "./dist",                             /* Specify an output folder for all emitted files. */
 
     /* JavaScript Support */
     // "allowJs": true,                                  /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */
@@ -55,8 +55,8 @@
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */
 
     /* Emit */
-    "declaration": true,                               /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
+    // "declaration": true,                            /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    // "declarationMap": true,                         /* Create sourcemaps for d.ts files. */
     "emitDeclarationOnly": false,                      /* Only output d.ts files and not JavaScript files. */
     "sourceMap": true,                                 /* Create source map files for emitted JavaScript files. */
     // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
