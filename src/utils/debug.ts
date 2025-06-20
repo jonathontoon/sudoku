@@ -1,4 +1,4 @@
-import { print } from './console';
+import { print } from "./console";
 
 /**
  * Debug utility functions
@@ -13,14 +13,14 @@ export let debugEnabled = false;
  * Enable or disable debug logging
  */
 export function setDebugEnabled(enabled: boolean): void {
-	debugEnabled = enabled;
+  debugEnabled = enabled;
 }
 
 /**
  * Log a debug message if debugging is enabled
  */
 export function debug(msg: string): void {
-	if (debugEnabled) {
-		print(msg);
-	}
-} 
+  if (debugEnabled) {
+    print(msg);
+  }
+}
