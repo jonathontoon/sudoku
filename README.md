@@ -21,12 +21,27 @@ A high-performance TypeScript implementation of Peter Norvig's constraint propag
 
 ## Installation
 
+**Note**: This package is not yet published to npm. For now, you can use it locally:
+
+### Local Development
 ```bash
-npm install sudoku-solver
-# or
-pnpm add sudoku-solver
-# or
-yarn add sudoku-solver
+# Clone the repository
+git clone <repository-url>
+cd sudoku
+pnpm install
+pnpm run build
+```
+
+### Using in Your Project
+```bash
+# Install from local directory
+pnpm add file:../path/to/sudoku
+
+# Or link for development
+cd sudoku
+pnpm link
+cd ../your-project
+pnpm link sudoku
 ```
 
 ## Quick Start
@@ -34,7 +49,7 @@ yarn add sudoku-solver
 ### Solving a Puzzle
 
 ```javascript
-import { solve } from 'sudoku-solver';
+import { solve } from 'sudoku';
 
 // Puzzle string: 0 = empty cell, 1-9 = filled cells
 const puzzle = '003020600900305001001806400008102900700000008006708200002609500800203009005010300';
@@ -47,7 +62,7 @@ console.log('Solution:', solution);
 ### Generating a New Puzzle
 
 ```javascript
-import { generate } from 'sudoku-solver';
+import { generate } from 'sudoku';
 
 // Generate an easy puzzle (35 clues)
 const puzzle = generate('easy');
@@ -60,7 +75,7 @@ const hardPuzzle = generate('hard'); // 23-26 clues
 ### Getting Hints
 
 ```javascript
-import { getHint, solve } from 'sudoku-solver';
+import { getHint, solve } from 'sudoku';
 
 const puzzle = '003020600900305001001806400008102900700000008006708200002609500800203009005010300';
 const hint = getHint(puzzle);
@@ -113,7 +128,7 @@ Provides solving hints and suggestions for the next move.
 ### Constants
 
 ```javascript
-import { DIGITS, SQUARES, ROWS, COLS } from 'sudoku-solver';
+import { DIGITS, SQUARES, ROWS, COLS } from 'sudoku';
 
 console.log(DIGITS);  // '123456789'
 console.log(SQUARES); // ['A1', 'A2', ..., 'I9']
@@ -269,6 +284,27 @@ This library has evolved through several iterations:
 - **Correctness**: Comprehensive test coverage (157 tests)
 - **Usability**: Simple API with TypeScript support
 - **Compatibility**: Works everywhere JavaScript runs
+
+## Publishing to npm
+
+To publish this package to npm (for maintainers):
+
+```bash
+# Build the package
+pnpm run build
+
+# Login to npm (if not already logged in)
+npm login
+
+# Publish (first time or patch version)
+npm publish
+
+# Or for specific version
+npm version patch|minor|major
+npm publish
+```
+
+Make sure to update the version in `package.json` before publishing.
 
 ## Contributing
 
