@@ -322,6 +322,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Acknowledgments
 
 - **Peter Norvig** - Original algorithm design and implementation
+- **Einar Egilsson** - JavaScript implementation insights and approach ([Sudoku in Javascript](https://einaregilsson.com/sudoku-in-javascript/))
 - **Sudoku community** - Test puzzles and validation datasets
 - **Open source ecosystem** - Tools and libraries that made this possible
 
