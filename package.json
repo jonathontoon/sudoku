@@ -38,7 +38,7 @@
     "solver",
     "typescript"
   ],
-  "author": "",
+  "author": "Jonathon Toon",
   "license": "MIT",
   "devDependencies": {
     "@jest/globals": "^30.0.2",
