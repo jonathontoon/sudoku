@@ -132,10 +132,10 @@ Check out the [`examples/`](./examples/) directory for complete usage examples:
 
 Run examples:
 ```bash
-npm run demo        # JavaScript comprehensive demo
-npm run demo:ts     # TypeScript comprehensive demo
-npm run simple      # JavaScript simple examples
-npm run simple:ts   # TypeScript simple examples
+pnpm run demo        # JavaScript comprehensive demo
+pnpm run demo:ts     # TypeScript comprehensive demo
+pnpm run simple      # JavaScript simple examples
+pnpm run simple:ts   # TypeScript simple examples
 ```
 
 ## Development
@@ -212,13 +212,13 @@ pnpm run test:coverage  # 86.23% coverage
 
 The library provides multiple build formats:
 
-- **`dist/sudoku.js`** (22.7KB) - Development build with readable code
-- **`dist/sudoku.min.js`** (12.0KB) - Minified production build  
+- **`dist/sudoku.js`** (18KB) - Clean ES module bundle with readable code
+- **`dist/sudoku.min.js`** (5.9KB) - Minified production build
 - **`dist/index.d.ts`** (2.1KB) - TypeScript definitions
 
 Compatible with:
 - ✅ **ES Modules** (import/export)
-- ✅ **Node.js** (CommonJS via module resolution)
+- ✅ **Node.js** (ES modules with `"type": "module"` or `.mjs` files)
 - ✅ **Browsers** (modern ES2020+)
 - ✅ **Bundlers** (Webpack, Rollup, Parcel, Vite)
 - ✅ **TypeScript** (full type safety)
@@ -234,11 +234,13 @@ This implementation is based on **Peter Norvig's constraint propagation algorith
 
 ### Performance Benchmarks
 
-Tested on collections of real-world puzzles:
+Performance varies by hardware and puzzle complexity. Typical results on modern hardware:
 
-- **Easy puzzles** (50): ~0.7ms average, 1,470 puzzles/second
-- **Hard puzzles** (95): ~2.6ms average, 380 puzzles/second  
-- **Hardest puzzles** (11): ~1.1ms average, 916 puzzles/second
+- **Easy puzzles**: Sub-millisecond solving, 1000+ puzzles/second
+- **Hard puzzles**: 1-10ms average, 100-1000 puzzles/second  
+- **Hardest puzzles**: Variable, typically under 10ms
+
+Run `pnpm run demo` to see performance on your system.
 
 ## Lineage & History
 
@@ -252,15 +254,15 @@ This library has evolved through several iterations:
 ### **Development Journey**
 1. **Initial Implementation** (2024): Core solver in TypeScript
 2. **Feature Expansion**: Added puzzle generation, hints, validation
-3. **Build Migration**: Migrated from Vite to ParcelJS for better library distribution
+3. **Build Evolution**: Vite → Parcel → **Rollup** for optimal library bundling
 4. **Test Migration**: Moved from Vitest to Jest for framework-agnostic testing
 5. **Production Ready**: Comprehensive test suite, examples, and documentation
 
 ### **Technical Evolution**
-- **Build System**: Vite → **ParcelJS** (better for libraries)
-- **Testing**: Vitest → **Jest** (framework agnostic)
-- **Module System**: Full ESM support with backward compatibility
-- **Distribution**: Multiple formats (dev/minified) with TypeScript definitions
+✅ - **Build System**: Vite → Parcel → **Rollup** (optimal library bundling)
+✅ - **Testing**: Vitest → **Jest** (framework agnostic)
+✅ - **Module System**: Full ESM support with backward compatibility
+✅ - **Distribution**: Bundled output with source maps and TypeScript definitions
 
 ### **Design Principles**
 - **Performance**: Fast constraint propagation algorithm
