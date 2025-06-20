@@ -1,6 +1,6 @@
-# Sudoku Solver
+# Sudoku
 
-A high-performance TypeScript implementation of Peter Norvig's constraint propagation Sudoku solver algorithm, packaged as a modern JavaScript library.
+A high-performance TypeScript implementation of Peter Norvig's constraint propagation Sudoku algorithm, packaged as a modern JavaScript library.
 
 [![Tests](https://img.shields.io/badge/tests-157%20passing-brightgreen)](#testing)
 [![Coverage](https://img.shields.io/badge/coverage-86.23%25-green)](#testing)
