@@ -157,8 +157,8 @@ pnpm install
 
 ```bash
 # Building
-pnpm run build          # Full build (dev + minified)
-pnpm run build:dev      # Development build
+pnpm run build          # Full build (bundle + minified)
+pnpm run build:bundle   # Main ES module bundle
 pnpm run build:min      # Minified build only
 pnpm run clean          # Clean dist directory
 pnpm run watch          # Watch mode development
