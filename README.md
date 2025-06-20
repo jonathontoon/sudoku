@@ -257,33 +257,11 @@ Performance varies by hardware and puzzle complexity. Typical results on modern 
 
 Run `pnpm run demo` to see performance on your system.
 
-## Lineage & History
+## History
 
-This library has evolved through several iterations:
-
-### **Origins** 
 - **Algorithm**: Based on Peter Norvig's seminal essay ["Solving Every Sudoku Puzzle"](http://norvig.com/sudoku.html)
 - **Language**: Originally implemented in Python, translated to TypeScript
 - **Philosophy**: Emphasizes constraint propagation over brute force search
-
-### **Development Journey**
-1. **Initial Implementation** (2024): Core solver in TypeScript
-2. **Feature Expansion**: Added puzzle generation, hints, validation
-3. **Build Evolution**: Vite → Parcel → **Rollup** for optimal library bundling
-4. **Test Migration**: Moved from Vitest to Jest for framework-agnostic testing
-5. **Production Ready**: Comprehensive test suite, examples, and documentation
-
-### **Technical Evolution**
-✅ - **Build System**: Vite → Parcel → **Rollup** (optimal library bundling)
-✅ - **Testing**: Vitest → **Jest** (framework agnostic)
-✅ - **Module System**: Full ESM support with backward compatibility
-✅ - **Distribution**: Bundled output with source maps and TypeScript definitions
-
-### **Design Principles**
-- **Performance**: Fast constraint propagation algorithm
-- **Correctness**: Comprehensive test coverage (157 tests)
-- **Usability**: Simple API with TypeScript support
-- **Compatibility**: Works everywhere JavaScript runs
 
 ## Publishing to npm
 
